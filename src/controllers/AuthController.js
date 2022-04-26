@@ -1,6 +1,6 @@
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "config/environment";
 import { TokenService } from "services/TokenService";
-import { createUser, deleteAllTokenOfUser, getUserByEmail, getUserById } from "services/UserService";
+import { UserService } from "services/UserService";
 import jwt from "jsonwebtoken";
 import { HttpStatusCode } from "constants/HttpStatusCode";
 
@@ -11,20 +11,20 @@ const encodedToken = (type, data) => {
     },
     type === "accessToken" ? ACCESS_TOKEN_SECRET : REFRESH_TOKEN_SECRET,
     {
-      expiresIn: type === "accessToken" ? "15s" : "10d",
+      expiresIn: type === "accessToken" ? "1d" : "10d",
     }
   );
 };
 
 const login = async (req, res) => {
-  const { password, ...user } = req.user;
+  const { password, ...data } = req.user;
 
   const accessToken = encodedToken("accessToken", data);
   const refreshToken = encodedToken("refreshToken", data);
   const expiredAt = new Date();
   expiredAt.setDate(expiredAt.getDate() + 7);
   await TokenService.create({
-    userId: user.id,
+    userId: data.id,
     token: refreshToken,
     expiredAt,
   });
@@ -40,11 +40,10 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    const foundUser = await getUserByEmail(req.body.email);
+    const foundUser = await UserService.find({ email: req.body.email });
     if (foundUser) return res.status(HttpStatusCode.FORBIDDEN).json({ error: { message: "Email is already in use." } });
-    const user = await createUser(req.body);
+    const user = await UserService.create(req.body);
     const accessToken = encodedToken("accessToken", user);
-
     return res.status(HttpStatusCode.OK).json({ accessToken });
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ error: { message: error.message } });
@@ -52,25 +51,25 @@ const register = async (req, res) => {
 };
 
 const handleRefeshToken = async (req, res) => {
+
   const refreshToken = req.cookies.jwt;
   if (!refreshToken) return res.sendStatus(HttpStatusCode.UNAUTHORIZED);
 
   const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
 
-  const existingUser = await getUserById(payload.id);
+  const existingUser = await UserService.findOne(payload.id);
   if (!existingUser) return res.sendStatus(HttpStatusCode.UNAUTHORIZED);
-
-  await deleteTokensOfUser(existingUser.id);
+  await UserService.deleteTokensOfUser(existingUser.id);
   const { password, ...data } = existingUser;
 
   const newRefreshToken = encodedToken("refreshToken", data);
-  const newAccessToken = encodedToken("accessToken", data);
+  const newAccessToken = encodedToken("accessToken", data);  
 
   const expiredAt = new Date();
   expiredAt.setDate(expiredAt.getDate() + 7);
   await TokenService.create({
     userId: existingUser.id,
-    token: refreshToken,
+    token: newRefreshToken,
     expiredAt,
   });
 
@@ -88,8 +87,7 @@ const handleRefeshToken = async (req, res) => {
 
 const logout = async (req, res) => {
   const refreshToken = req.cookies.jwt;
-
-  const existingToken = await TokenService.findOne({
+  const existingToken = await TokenService.find({
     token: refreshToken,
   });
 

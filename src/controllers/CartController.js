@@ -5,24 +5,14 @@ import { UserService } from "services/UserService";
 import { ProductService } from "services/ProductService";
 
 const getCart = async (req, res) => {
-  // const { user } = req;
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
 
   const carts = await UserService.getCart(user.id);
   return res.status(HttpStatusCode.OK).json({ carts });
 };
 
 const addToCart = async (req, res) => {
-  // const { user } = req;
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
   const quantity = parseInt(req.body.quantity);
   const productId = parseInt(req.body.productId);
 
@@ -52,28 +42,23 @@ const addToCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-  // const { user } = req;
-
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
   const quantity = parseInt(req.body.quantity);
   const productId = parseInt(req.body.productId);
 
   try {
     const product = await ProductService.findOne(productId);
+
     if (!product)
       return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No product found with the productId ${productId}` });
 
     const foundCart = await CartService.find({ userId: user.id, productId: productId });
+    console.log(foundCart);
     if (!foundCart)
       return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No cart found with the userId ${user.id}` });
 
     const cart = await CartService.update(foundCart.id, { quantity });
     if (cart.quantity === 0) await CartService.remove(cart.id);
-
     return res.status(HttpStatusCode.OK).json(cart);
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
@@ -81,12 +66,8 @@ const updateCart = async (req, res) => {
 };
 
 const removeItem = async (req, res) => {
-  // const { user } = req;
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
+
   const productId = parseInt(req.body.productId);
 
   try {

@@ -2,7 +2,20 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const findAll = () => {
+const findAll = ({ page, limit = 1, sortBy = "id", orderBy = "asc", search = "" }) => {
+  let offset = page * limit;
+  let options = {
+    include: {
+      productImages: true,
+    },
+    orderBy: {
+      [sortBy]: orderBy,
+    },
+  };
+  if (page) {
+    options.skip = offset - limit;
+    options.take = parseInt(limit);
+  }
   return prisma.order.findMany();
 };
 

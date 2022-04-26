@@ -3,42 +3,25 @@ import { OrderService } from "services/OrderService";
 import { UserService } from "services/UserService";
 
 const findAllOrder = async (req, res, next) => {
-  // const { user} = req;
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
-
-  const orders = await UserService.getOrder(user.id);
+  const { page, limit, sortBy, orderBy, search } = req.query;
+  const { user } = req;
+  const orders = await UserService.getOrder({id: user.id});
   return res.status(HttpStatusCode.OK).json({ orders });
 };
 
 const findOneOrder = async (req, res) => {
-  //const { user } = req;
-
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
   const orderId = parseInt(req.params.orderId);
   const order = await OrderService.find({ id: orderId, userId: user.id });
   if (!order)
-    
-  return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No order found with the orderId ${orderId} in user` });
+    return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No order found with the orderId ${orderId} in user` });
 
   return res.status(HttpStatusCode.OK).json({ order });
 };
 
 const updateOrder = async (req, res) => {
-  //const { user } = req;
+  const { user } = req;
 
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
   const orderId = parseInt(req.params.orderId);
   const orders = await UserService.getOrder(user.id);
   const status = 2;

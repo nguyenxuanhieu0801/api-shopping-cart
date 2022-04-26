@@ -12,7 +12,7 @@ const routes = (app) => {
   app.use("/user", userRoutes);
   app.use("/products", productsRoutes);
   app.use("/categories", categoriesRoutes);
-  app.use("/carts", cartRoutes);
+  app.use("/cart", cartRoutes);
   app.use("/orders", orderRoutes);
 };
 

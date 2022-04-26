@@ -4,7 +4,9 @@ import { OrderService } from "services/OrderService";
 import { UserService } from "services/UserService";
 
 const findAll = async (req, res) => {
-  const orders = await OrderService.findAll();
+  const { page, limit, sortBy, orderBy, search } = req.query;
+
+  const orders = await OrderService.findAll({ search, page, limit, sortBy, orderBy });
   return res.status(HttpStatusCode.OK).json({ orders });
 };
 
@@ -24,12 +26,7 @@ const findOne = async (req, res) => {
 };
 
 const addOrder = async (req, res) => {
-  // const { user } = req;
-  let user = {
-    id: 1,
-    email: "Hieu1",
-    name: "Hieu",
-  };
+  const { user } = req;
 
   const { shipName, shipAddress, shipEmail, shipPhone } = req.body;
 
@@ -42,14 +39,14 @@ const addOrder = async (req, res) => {
       price: item.price,
       quantity: item.quantity,
       productId: item.productId,
-      orderId: 24,
+      orderId: order.id,
     };
     await OrderDetailService.create(data);
   });
 
   await UserService.deleteCartsOfUser(user.id);
 
-  return res.sendStatus(200);
+  return res.status(HttpStatusCode.OK).json({ order });
 };
 
 const updateOrder = async (req, res) => {

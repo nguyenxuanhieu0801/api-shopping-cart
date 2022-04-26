@@ -2,7 +2,9 @@ import { HttpStatusCode } from "constants/HttpStatusCode";
 import { CategoryService } from "services/CategoryService";
 
 const findAll = async (req, res) => {
-  const categories = await CategoryService.findAll();
+  const { page, limit, sortBy, orderBy, search } = req.query;
+
+  const categories = await CategoryService.findAll({ search, page, limit, sortBy, orderBy });
   return res.status(HttpStatusCode.OK).json({ categories });
 };
 
@@ -33,7 +35,8 @@ const update = async (req, res) => {
   const categoryId = parseInt(req.params.categoryId);
   try {
     const foundProduct = await CategoryService.findOne(categoryId);
-    if (!foundProduct) return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No category found with the id ${categoryId}` });
+    if (!foundProduct)
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No category found with the id ${categoryId}` });
     const category = await CategoryService.update(categoryId, req.body);
     return res.status(HttpStatusCode.OK).json(category);
   } catch (error) {

@@ -17,7 +17,17 @@ const findOne = (id) => {
   });
 };
 
-const getCart = async (id) => {
+const getCart = async ({ id, page, limit = 1, sortBy = "id", orderBy = "asc" }) => {
+  let offset = page * limit;
+  let options = {
+    include: {
+      products: true,
+    },
+    orderBy: {
+      [sortBy]: orderBy,
+    },
+  };
+
   const { carts } = await prisma.user.findUnique({
     where: { id },
     select: { carts: true },
@@ -31,7 +41,6 @@ const getOrder = async (id) => {
     where: { id },
     select: { orders: true },
   });
-
   return orders;
 };
 

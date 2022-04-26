@@ -29,23 +29,21 @@ const findOne = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { files, body } = req;
-    console.log(body);
-    // const product = await ProductService.create(req.body);
+    const product = await ProductService.create(req.body);
     // if (product) {
-    uploadImage(req, res, function (err) {
-      if (err) {
-        return res.status(HttpStatusCode.BAD_REQUEST).send({ message: err.message });
-      }
-      const files = req.files;
+    // uploadImage(req, res, function (err) {
+    // if (err) {
+    //   return res.status(HttpStatusCode.BAD_REQUEST).send({ message: err.message });
+    // }
+    // const files = req.files;
 
-      // if (files) {
-      //   files.forEach(async (file) => {
-      //     const { filename, path, size } = file;
-      //     await ProductImageService.create({ imagePath: path, filename, fileSize: size });
-      //   });
-      // }
-    });
+    // if (files) {
+    //   files.forEach(async (file) => {
+    //     const { filename, path, size } = file;
+    //     await ProductImageService.create({ imagePath: path, filename, fileSize: size });
+    //   });
+    // }
+    //});
     // }
     return res.status(HttpStatusCode.OK).json({ product });
   } catch (error) {
