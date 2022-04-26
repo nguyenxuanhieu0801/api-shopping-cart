@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  phone     String?
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tokens Token[]
+  carts  Cart[]
+  orders Order[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token     String   @db.Text()
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  expiredAt DateTime
+  createAt  DateTime @default(now())
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Float
+  description String
+  stock       Int
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+
+  productImages ProductImage[]
+  carts         Cart[]
+  orderDetails  OrderDetail[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  imagePath String
+  fileName   String
+  fileSize  Float?
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  price     Float
+  quantity  Int
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  shipName    String
+  shipAddress String
+  shipEmail   String?
+  shipPhone   String
+  status      Int
+  createAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  orderDetails OrderDetail[]
+}
+
+model OrderDetail {
+  id        Int      @id @default(autoincrement())
+  price     Float
+  quantity  Int
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  Order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   Int?
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}
