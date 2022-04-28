@@ -1,9 +1,5 @@
-import upload from "middlewares/upload";
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { ProductImageService } from "services/ProductImageService";
 import { ProductService } from "services/ProductService";
-
-const uploadImage = upload.array("image", 3);
 
 const findAll = async (req, res) => {
   const { page, limit, sortBy, orderBy, search } = req.query;
@@ -20,7 +16,7 @@ const findOne = async (req, res) => {
     if (product) {
       return res.status(HttpStatusCode.OK).json(product);
     } else {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${productId}` });
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No product found with the id ${productId}` });
     }
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
@@ -29,22 +25,12 @@ const findOne = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const product = await ProductService.create(req.body);
-    // if (product) {
-    // uploadImage(req, res, function (err) {
-    // if (err) {
-    //   return res.status(HttpStatusCode.BAD_REQUEST).send({ message: err.message });
-    // }
-    // const files = req.files;
+    const data = { ...req.body };
+    data.price = parseFloat(data.price);
+    data.stock = parseInt(data.stock);
+    data.categoryId = parseInt(data.categoryId);
+    const product = await ProductService.create({ ...data });
 
-    // if (files) {
-    //   files.forEach(async (file) => {
-    //     const { filename, path, size } = file;
-    //     await ProductImageService.create({ imagePath: path, filename, fileSize: size });
-    //   });
-    // }
-    //});
-    // }
     return res.status(HttpStatusCode.OK).json({ product });
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ error: error.message });
@@ -54,12 +40,17 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const productId = parseInt(req.params.productId);
 
+  const data = { ...req.body };
+  data.price = parseFloat(data.price);
+  data.stock = parseInt(data.stock);
+  data.categoryId = parseInt(data.categoryId);
+
   try {
     const foundProduct = await ProductService.findOne(productId);
     if (!foundProduct)
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${productId}` });
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No product found with the id ${productId}` });
 
-    const product = await ProductService.update(productId, req.body);
+    const product = await ProductService.update(productId, data);
     return res.status(HttpStatusCode.OK).json(product);
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
@@ -72,9 +63,9 @@ const remove = async (req, res) => {
   try {
     const product = await ProductService.remove(productId);
     if (product) {
-      return res.status(HttpStatusCode.OK).json(product);
+      return res.status(HttpStatusCode.OK).json({ message: "Delete product successfully", product });
     } else {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${productId}` });
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No product found with the id ${productId}` });
     }
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });

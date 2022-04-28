@@ -24,7 +24,12 @@ const findAll = ({ page, limit = 1, sortBy = "id", orderBy = "asc", search = "" 
 };
 
 const findOne = (id) => {
-  return prisma.product.findUnique({ where: { id } });
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      productImages: true,
+    },
+  });
 };
 
 const create = (data) => {

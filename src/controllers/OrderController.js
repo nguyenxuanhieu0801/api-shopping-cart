@@ -18,7 +18,7 @@ const findOne = async (req, res) => {
     if (order) {
       return res.status(HttpStatusCode.OK).json(order);
     } else {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${orderId}` });
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No order found with the id ${orderId}` });
     }
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });

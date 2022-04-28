@@ -14,9 +14,9 @@ export const initPassport = () => {
       async (email, password, done) => {
         try {
           const user = await UserService.find({ email });
-
           if (!user) return done(null, false);
           let verifyPassword = await bcrypt.compare(password, user.password);
+          console.log(verifyPassword);
           if (!verifyPassword) return done(null, false);
           done(null, user);
         } catch (error) {
