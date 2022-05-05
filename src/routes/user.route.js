@@ -1,4 +1,4 @@
-import { UserController } from "controllers/UserController";
+import { UserController } from "controllers/user.controller";
 import { Router } from "express";
 import passport from "passport";
 

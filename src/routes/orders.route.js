@@ -1,4 +1,4 @@
-import { OrderController } from "controllers/OrderController";
+import { OrderController } from "controllers/order.controller";
 import { Router } from "express";
 import passport from "passport";
 

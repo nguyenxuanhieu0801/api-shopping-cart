@@ -1,5 +1,5 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { CategoryService } from "services/CategoryService";
+import { CategoryService } from "services/category.service";
 
 const findAll = async (req, res) => {
   const { page, limit, sortBy, orderBy, search } = req.query;

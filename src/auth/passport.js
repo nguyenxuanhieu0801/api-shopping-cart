@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { ACCESS_TOKEN_SECRET } from "config/environment";
 import bcrypt from "bcrypt";
-import { UserService } from "services/UserService";
+import { UserService } from "services/user.service";
 
 export const initPassport = () => {
   passport.use(

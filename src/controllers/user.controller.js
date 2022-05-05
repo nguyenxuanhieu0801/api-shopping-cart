@@ -1,11 +1,11 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { OrderService } from "services/OrderService";
-import { UserService } from "services/UserService";
+import { OrderService } from "services/order.service";
+import { UserService } from "services/user.service";
 
 const findAllOrder = async (req, res, next) => {
   const { page, limit, sortBy, orderBy, search } = req.query;
   const { user } = req;
-  const orders = await UserService.getOrder({id: user.id});
+  const orders = await UserService.getOrder({ id: user.id });
   return res.status(HttpStatusCode.OK).json({ orders });
 };
 

@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { ProductImageService } from "services/ProductImageService";
-import { ProductService } from "services/ProductService";
+import { ProductImageService } from "services/productImage.service";
+import { ProductService } from "services/product.service";
 import fs from "fs";
 
 const create = async (req, res) => {

@@ -1,6 +1,6 @@
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "config/environment";
-import { TokenService } from "services/TokenService";
-import { UserService } from "services/UserService";
+import { TokenService } from "services/token.service";
+import { UserService } from "services/user.service";
 import jwt from "jsonwebtoken";
 import { HttpStatusCode } from "constants/HttpStatusCode";
 
@@ -51,7 +51,6 @@ const register = async (req, res) => {
 };
 
 const handleRefeshToken = async (req, res) => {
-
   const refreshToken = req.cookies.jwt;
   if (!refreshToken) return res.sendStatus(HttpStatusCode.UNAUTHORIZED);
 
@@ -63,7 +62,7 @@ const handleRefeshToken = async (req, res) => {
   const { password, ...data } = existingUser;
 
   const newRefreshToken = encodedToken("refreshToken", data);
-  const newAccessToken = encodedToken("accessToken", data);  
+  const newAccessToken = encodedToken("accessToken", data);
 
   const expiredAt = new Date();
   expiredAt.setDate(expiredAt.getDate() + 7);

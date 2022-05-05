@@ -1,7 +1,7 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { OrderDetailService } from "services/OrderDetailService";
-import { OrderService } from "services/OrderService";
-import { UserService } from "services/UserService";
+import { OrderDetailService } from "services/orderDetail.service";
+import { OrderService } from "services/order.service";
+import { UserService } from "services/user.service";
 
 const findAll = async (req, res) => {
   const { page, limit, sortBy, orderBy, search } = req.query;

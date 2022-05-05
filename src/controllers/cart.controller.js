@@ -1,8 +1,8 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
-import { CartService } from "services/CartService";
-import { UserService } from "services/UserService";
+import { CartService } from "services/cart.service";
+import { UserService } from "services/user.service";
 
-import { ProductService } from "services/ProductService";
+import { ProductService } from "services/product.service";
 
 const getCart = async (req, res) => {
   const { user } = req;

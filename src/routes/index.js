@@ -1,19 +1,20 @@
-import { authRoutes } from "./auth";
-import { cartRoutes } from "./cart";
-import { categoriesRoutes } from "./categories";
-import { orderRoutes } from "./orders";
-import { productsRoutes } from "./products";
-import { userRoutes } from "./user";
-import { usersRoutes } from "./users";
+import { Router } from "express";
+import { authRoutes } from "./auth.route";
+import { cartRoutes } from "./cart.route";
+import { categoriesRoutes } from "./categories.route";
+import { orderRoutes } from "./orders.route";
+import { productsRoutes } from "./products.route";
+import { userRoutes } from "./user.route";
+import { usersRoutes } from "./users.route";
 
-const routes = (app) => {
-  app.use("/auth", authRoutes);
-  app.use("/users", usersRoutes);
-  app.use("/user", userRoutes);
-  app.use("/products", productsRoutes);
-  app.use("/categories", categoriesRoutes);
-  app.use("/cart", cartRoutes);
-  app.use("/orders", orderRoutes);
-};
+const routes = Router();
+
+routes.use("/auth", authRoutes);
+routes.use("/users", usersRoutes);
+routes.use("/user", userRoutes);
+routes.use("/products", productsRoutes);
+routes.use("/categories", categoriesRoutes);
+routes.use("/cart", cartRoutes);
+routes.use("/orders", orderRoutes);
 
 export default routes;

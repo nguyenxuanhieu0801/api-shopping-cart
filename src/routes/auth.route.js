@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { AuthController } from "controllers/AuthController";
+import { AuthController } from "controllers/auth.controller";
 
 const routes = Router();
 

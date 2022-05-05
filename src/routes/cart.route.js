@@ -1,4 +1,4 @@
-import { CartController } from "controllers/CartController";
+import { CartController } from "controllers/cart.controller";
 import { Router } from "express";
 import passport from "passport";
 
