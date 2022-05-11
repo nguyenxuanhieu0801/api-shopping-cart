@@ -38,8 +38,9 @@ const updateOrder = async (req, res) => {
 };
 
 const findAll = async (req, res) => {
-  const users = await UserService.findAll();
-  return res.status(HttpStatusCode.OK).json({ users });
+  const { page, limit, sortBy, orderBy, search } = req.query;
+  const results = await UserService.findAll({ search, page, limit, sortBy, orderBy });
+  return res.status(HttpStatusCode.OK).json({ ...results });
 };
 
 const findOne = async (req, res) => {

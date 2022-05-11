@@ -1,26 +1,30 @@
 import { PrismaClient } from "@prisma/client";
+import { pagination } from "utils/pagination";
 
 const prisma = new PrismaClient();
 
-const findAll = ({ page, limit = 1, sortBy = "id", orderBy = "asc", search = "" }) => {
-  let offset = page * limit;
+const findAll = async ({ page = "", limit = "1", sortBy = "id", orderBy = "asc", search = "" }) => {
   let options = {
-    include: {
-      productImages: true,
+    where: {
+      name: { contains: search },
     },
     orderBy: {
       [sortBy]: orderBy,
     },
+    include: {
+      productImages: true,
+    },
   };
-  if (page) {
+  if (page != "") {
+    let offset = page * limit;
     options.skip = offset - limit;
     options.take = parseInt(limit);
   }
-  if (search)
-    options.where = {
-      name: { contains: search },
-    };
-  return prisma.product.findMany({ ...options });
+
+  const count = await prisma.product.count({ where: { ...options.where } });
+  const data = await prisma.product.findMany({ ...options });
+
+  return pagination({ count, page, limit, data });
 };
 
 const findOne = (id) => {

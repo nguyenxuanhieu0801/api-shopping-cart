@@ -4,8 +4,8 @@ import { ProductService } from "services/product.service";
 const findAll = async (req, res) => {
   const { page, limit, sortBy, orderBy, search } = req.query;
 
-  const products = await ProductService.findAll({ search, page, limit, sortBy, orderBy });
-  return res.status(HttpStatusCode.OK).json({ products });
+  const results = await ProductService.findAll({ search, page, limit, sortBy, orderBy });
+  return res.status(HttpStatusCode.OK).json({ ...results });
 };
 
 const findOne = async (req, res) => {

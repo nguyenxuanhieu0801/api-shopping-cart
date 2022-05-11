@@ -1,14 +1,32 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { pagination } from "utils/pagination";
 
 const prisma = new PrismaClient();
 
-const findAll = () => {
-  return prisma.user.findMany({
+const findAll = async ({ page = "", limit = "1", sortBy = "id", orderBy = "asc", search = "" }) => {
+  let options = {
+    where: {
+      name: { contains: search },
+    },
+    orderBy: {
+      [sortBy]: orderBy,
+    },
     include: {
       carts: true,
+      orders: true,
     },
-  });
+  };
+  if (page != "") {
+    let offset = page * limit;
+    options.skip = offset - limit;
+    options.take = parseInt(limit);
+  }
+
+  const count = await prisma.user.count({ where: { ...options.where } });
+  const data = await prisma.user.findMany({ ...options });
+
+  return pagination({ count, page, limit, data });
 };
 
 const findOne = (id) => {

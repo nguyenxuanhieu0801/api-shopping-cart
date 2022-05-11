@@ -4,8 +4,8 @@ import { CategoryService } from "services/category.service";
 const findAll = async (req, res) => {
   const { page, limit, sortBy, orderBy, search } = req.query;
 
-  const categories = await CategoryService.findAll({ search, page, limit, sortBy, orderBy });
-  return res.status(HttpStatusCode.OK).json({ categories });
+  const results = await CategoryService.findAll({ search, page, limit, sortBy, orderBy });
+  return res.status(HttpStatusCode.OK).json({ ...results });
 };
 
 const findOne = async (req, res) => {
@@ -49,6 +49,7 @@ const remove = async (req, res) => {
 
   try {
     const category = await CategoryService.remove(categoryId);
+
     if (category) {
       return res.status(HttpStatusCode.OK).json(category);
     } else {
