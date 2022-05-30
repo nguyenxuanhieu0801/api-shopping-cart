@@ -3,6 +3,7 @@ import { TokenService } from "services/token.service";
 import { UserService } from "services/user.service";
 import jwt from "jsonwebtoken";
 import { HttpStatusCode } from "constants/HttpStatusCode";
+import createError from "http-errors";
 
 const encodedToken = (type, data) => {
   return jwt.sign(

@@ -3,7 +3,7 @@ import { pagination } from "utils/pagination";
 
 const prisma = new PrismaClient();
 
-const findAll = async ({ page = "", limit = "1", sortBy = "id", orderBy = "asc", search = "" }) => {
+const findAll = async ({ page, limit, sortBy, orderBy, search }) => {
   let options = {
     where: {
       name: { contains: search },
@@ -15,10 +15,10 @@ const findAll = async ({ page = "", limit = "1", sortBy = "id", orderBy = "asc",
       productImages: true,
     },
   };
-  if (page != "") {
+  if (page != 0) {
     let offset = page * limit;
     options.skip = offset - limit;
-    options.take = parseInt(limit);
+    options.take = limit;
   }
 
   const count = await prisma.product.count({ where: { ...options.where } });

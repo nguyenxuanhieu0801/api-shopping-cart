@@ -1,15 +1,16 @@
 import { HttpStatusCode } from "constants/HttpStatusCode";
 import { OrderService } from "services/order.service";
 import { UserService } from "services/user.service";
+import createError from "http-errors";
 
 const findAllOrder = async (req, res, next) => {
-  const { page, limit, sortBy, orderBy, search } = req.query;
+  const { page = 0, limit = 1, sortBy = "id", orderBy = "asc", search = "" } = req.query;
   const { user } = req;
   const orders = await UserService.getOrder({ id: user.id });
   return res.status(HttpStatusCode.OK).json({ orders });
 };
 
-const findOneOrder = async (req, res) => {
+const findOneOrder = async (req, res, next) => {
   const { user } = req;
   const orderId = parseInt(req.params.orderId);
   const order = await OrderService.find({ id: orderId, userId: user.id });
@@ -38,51 +39,52 @@ const updateOrder = async (req, res) => {
 };
 
 const findAll = async (req, res) => {
-  const { page, limit, sortBy, orderBy, search } = req.query;
-  const results = await UserService.findAll({ search, page, limit, sortBy, orderBy });
-  return res.status(HttpStatusCode.OK).json({ ...results });
-};
-
-const findOne = async (req, res) => {
-  const userId = parseInt(req.params.userId);
-
   try {
-    const user = await UserService.findOne(userId);
-    if (user) {
-      return res.status(HttpStatusCode.OK).json(user);
-    } else {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${userId}` });
-    }
+    const { page = 0, limit = 1, sortBy = "id", orderBy = "asc", search = "" } = req.query;
+    const results = await UserService.findAll({ search, page, limit, sortBy, orderBy });
+    return res.status(HttpStatusCode.OK).json({ results });
   } catch (error) {
-    return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
+    next(createError.NotFound(error.message));
   }
 };
 
-const create = async (req, res) => {
+const findOne = async (req, res, next) => {
+  const userId = parseInt(req.params.userId);
+
+  try {
+    const { password, ...data } = await UserService.findOne(userId);
+    if (!data) {
+      next(createError.NotFound(`No user found with the id ${userId}`));
+    }
+    return res.status(HttpStatusCode.OK).json(data);
+  } catch (error) {
+    next(createError.NotFound(error.message));
+  }
+};
+
+const create = async (req, res, next) => {
   try {
     const user = await UserService.create(req.body);
     return res.status(HttpStatusCode.OK).json({ user });
   } catch (error) {
-    return res.status(HttpStatusCode.NOT_FOUND).json({ error: error.message });
+    next(createError.NotFound(error.message));
   }
 };
 
-const update = async (req, res) => {
+const update = async (req, res, next) => {
   const userId = parseInt(req.params.userId);
 
   try {
     const foundUser = await UserService.findOne(userId);
-    if (!foundUser)
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${userId}` });
+    if (!foundUser) next(createError.NotFound(`No user found with the id ${userId}`));
 
     const emailExists = await UserService.find({ email: req.body.email });
-    if (emailExists)
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `User is already in use by ${req.body.email}` });
+    if (emailExists) next(createError.NotFound(`User is already in use by ${req.body.email}`));
 
     const user = await UserService.update(userId, req.body);
     return res.status(HttpStatusCode.OK).json(user);
   } catch (error) {
-    return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
+    next(createError.NotFound(error.message));
   }
 };
 
@@ -91,11 +93,10 @@ const remove = async (req, res) => {
 
   try {
     const user = await UserService.remove(userId);
-    if (user) {
-      return res.status(HttpStatusCode.OK).json(user);
-    } else {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `No user found with the id ${userId}` });
+    if (!user) {
+      next(createError.NotFound(`No user found with the id ${userId}`));
     }
+    return res.status(HttpStatusCode.OK).json(user);
   } catch (error) {
     return res.status(HttpStatusCode.NOT_FOUND).json({ message: error.message });
   }

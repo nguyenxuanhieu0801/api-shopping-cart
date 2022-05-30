@@ -1,11 +1,17 @@
 export const pagination = ({ count, data, page, limit }) => {
-  let results = {
+  let meta = {
     totalRecords: count,
-    data,
+    currentPage: page,
+    totalPages: Math.ceil(count / limit),
+    limit,
   };
-  if (page !== "") {
-    results = { currentPage: page, totalPage: Math.ceil(count / limit), limit, ...results };
+  console.log(data);
+  if (page === 0) {
+    return data;
   }
 
-  return results;
+  return {
+    meta,
+    data,
+  };
 };

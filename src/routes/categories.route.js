@@ -6,7 +6,7 @@ import { CategoryValidation } from "validations/category.validation";
 const router = Router();
 
 router.get("/", CategoryController.findAll);
-router.get("/:categoryId", passport.authenticate("jwt", { session: false }), CategoryController.findOne);
+router.get("/:categoryId", CategoryController.findOne);
 router.post(
   "/",
   passport.authenticate("jwt", { session: false }),

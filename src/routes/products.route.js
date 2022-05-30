@@ -9,7 +9,9 @@ import { ProductValidation } from "validations/product.validation";
 const router = Router();
 
 router.get("/", ProductController.findAll);
-router.get("/:productId", passport.authenticate("jwt", { session: false }), ProductController.findOne);
+router.get("/:productId", 
+// passport.authenticate("jwt", { session: false }), 
+ProductController.findOne);
 router.post("/", passport.authenticate("jwt", { session: false }), ProductValidation.create, ProductController.create);
 router.put(
   "/:productId",
